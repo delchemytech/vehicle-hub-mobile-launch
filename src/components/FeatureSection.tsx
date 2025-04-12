@@ -7,7 +7,7 @@ import {
   AlertTriangle, 
   Smartphone, 
   AlertCircle, 
-  SosCircle, 
+  LifeBuoy, 
   Award 
 } from "lucide-react";
 
@@ -59,7 +59,7 @@ const FeatureSection = () => {
       id: 7,
       title: "Emergency Roadside Assistance",
       description: "24/7 help when you need it most",
-      icon: SosCircle,
+      icon: LifeBuoy,
       color: "bg-red-100 text-vehicle-red",
     },
     {
