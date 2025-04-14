@@ -32,9 +32,9 @@ const HeroSection = () => {
               <div className="absolute -bottom-8 -left-8 w-48 h-48 bg-vehicle-blue rounded-full opacity-10 -z-10"></div>
               
               {/* Hero image: this would ideally be a real app mockup */}
-              <div className="bg-white p-3 rounded-3xl shadow-xl">
+              <div className="">
                 <img
-                  src="https://images.unsplash.com/photo-1558586538-30289487cbfe?auto=format&fit=crop&q=80&w=500&ixlib=rb-4.0.3"
+                  src="/images/hero_car.webp"
                   alt="Car dashboard with app interface"
                   className="w-full h-auto rounded-2xl"
                 />
