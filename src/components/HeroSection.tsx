@@ -19,9 +19,9 @@ const HeroSection = () => {
             <div className="flex flex-col gap-6 animate-fade-in" style={{ animationDelay: "0.4s" }}>
               <AppStoreButtons />
               
-              <Button className="bg-vehicle-red hover:bg-red-600 text-white shadow-button w-full sm:w-auto">
+              {/* <Button className="bg-vehicle-red hover:bg-red-600 text-white shadow-button w-full sm:w-auto">
                 Track Your Car Now
-              </Button>
+              </Button> */}
             </div>
           </div>
           
