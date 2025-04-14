@@ -1,3 +1,4 @@
+// src/lib/ga.ts
 export const initGA = () => {
     const gaId = import.meta.env.VITE_GA_ID;
     if (!gaId || typeof window === 'undefined' || (window as any).gtag) return;
@@ -8,7 +9,7 @@ export const initGA = () => {
     script.src = `https://www.googletagmanager.com/gtag/js?id=${gaId}`;
     document.head.appendChild(script);
   
-    // Initialize GA config
+    // Init config
     const inlineScript = document.createElement('script');
     inlineScript.innerHTML = `
       window.dataLayer = window.dataLayer || [];
@@ -17,5 +18,14 @@ export const initGA = () => {
       gtag('config', '${gaId}', { page_path: window.location.pathname });
     `;
     document.head.appendChild(inlineScript);
+  };
+  
+  export const trackPageView = (url: string) => {
+    const gaId = import.meta.env.VITE_GA_ID;
+    if ((window as any).gtag && gaId) {
+      (window as any).gtag("config", gaId, {
+        page_path: url,
+      });
+    }
   };
   

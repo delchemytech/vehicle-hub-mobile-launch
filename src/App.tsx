@@ -6,7 +6,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import { initHotjar } from "./lib/hotjar"; // 👈 Make sure this path is correct
+import { initHotjar } from "./lib/hotjar";
+import { initGA, trackPageView } from "./lib/ga";
 
 const queryClient = new QueryClient();
 
@@ -14,9 +15,7 @@ const HotjarTracker = () => {
   const location = useLocation();
 
   useEffect(() => {
-    console.log(process.env.NODE_ENV);
-    if (process.env.NODE_ENV === "production") {
-    // if (true) {
+    if (import.meta.env.MODE === "production") {
       initHotjar();
     }
   }, []);
@@ -30,13 +29,30 @@ const HotjarTracker = () => {
   return null;
 };
 
+const GoogleAnalyticsTracker = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (import.meta.env.MODE === "production") {
+      initGA();
+    }
+  }, []);
+
+  useEffect(() => {
+    trackPageView(location.pathname);
+  }, [location]);
+
+  return null;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <HotjarTracker /> {/* 👈 Tracks initial and route change hits */}
+        <HotjarTracker />
+        <GoogleAnalyticsTracker />
         <Routes>
           <Route path="/" element={<Index />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
