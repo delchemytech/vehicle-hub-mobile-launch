@@ -1,17 +1,19 @@
-
 import React, { useState } from "react";
 import { AlignJustify, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
+import WaitlistDialog from "@/components/ui/WaitlistDialog";
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  
+  const [dialogOpen, setDialogOpen] = useState(false);
+
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
 
   return (
-    <header className="fixed top-0 left-0 w-full bg-white/90 backdrop-blur-md z-50 shadow-sm">
+    <header className="fixed top-0 left-0 w-full bg-white backdrop-blur-md z-50 shadow-sm">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center">
@@ -42,66 +44,78 @@ const Header = () => {
               <li><a href="#faq" className="text-sm hover:text-vehicle-blue transition-colors">FAQ</a></li>
             </ul>
           </nav>
-          <Button className="bg-vehicle-blue hover:bg-vehicle-skyblue text-white transition-colors">
+          <Button 
+            className="bg-vehicle-blue hover:bg-vehicle-skyblue text-white transition-colors"
+            onClick={() => setDialogOpen(true)}
+          >
             Download App
           </Button>
         </div>
 
         {/* Mobile Menu Drawer */}
-        {menuOpen && (
-          <div className="fixed inset-0 z-50 bg-white pt-16">
-            <div className="container mx-auto px-4">
-              <nav>
-                <ul className="flex flex-col space-y-6 text-center">
-                  <li>
-                    <a 
-                      href="#features" 
-                      className="text-lg block py-2 hover:text-vehicle-blue transition-colors"
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      Features
-                    </a>
-                  </li>
-                  <li>
-                    <a 
-                      href="#benefits" 
-                      className="text-lg block py-2 hover:text-vehicle-blue transition-colors"
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      Benefits
-                    </a>
-                  </li>
-                  <li>
-                    <a 
-                      href="#testimonials" 
-                      className="text-lg block py-2 hover:text-vehicle-blue transition-colors"
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      Testimonials
-                    </a>
-                  </li>
-                  <li>
-                    <a 
-                      href="#faq" 
-                      className="text-lg block py-2 hover:text-vehicle-blue transition-colors"
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      FAQ
-                    </a>
-                  </li>
-                  <li className="pt-6">
-                    <Button 
-                      className="bg-vehicle-blue hover:bg-vehicle-skyblue text-white transition-colors w-full" 
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      Download App
-                    </Button>
-                  </li>
-                </ul>
-              </nav>
-            </div>
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={menuOpen ? { opacity: 1, y: 0 } : { opacity: 0, y: -20 }}
+          transition={{ duration: 0.3 }}
+          className={`fixed inset-0 z-50 mt-16 ${menuOpen ? "block" : "hidden"}`}
+        >
+          <div className="container mx-auto bg-white px-4 py-8 rounded-b-3xl shadow-lg">
+            <nav>
+              <ul className="flex flex-col space-y-6 text-center">
+                <li>
+                  <a 
+                    href="#features" 
+                    className="text-lg block py-2 hover:text-vehicle-blue transition-colors"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    Features
+                  </a>
+                </li>
+                <li>
+                  <a 
+                    href="#benefits" 
+                    className="text-lg block py-2 hover:text-vehicle-blue transition-colors"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    Benefits
+                  </a>
+                </li>
+                <li>
+                  <a 
+                    href="#testimonials" 
+                    className="text-lg block py-2 hover:text-vehicle-blue transition-colors"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    Testimonials
+                  </a>
+                </li>
+                <li>
+                  <a 
+                    href="#faq" 
+                    className="text-lg block py-2 hover:text-vehicle-blue transition-colors"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    FAQ
+                  </a>
+                </li>
+                <li className="pt-6">
+                  <Button 
+                    className="bg-vehicle-blue hover:bg-vehicle-skyblue text-white transition-colors w-full" 
+                    onClick={() => {
+                      setMenuOpen(false);
+                      setDialogOpen(true);
+                    }}
+                  >
+                    Download App
+                  </Button>
+                </li>
+              </ul>
+            </nav>
           </div>
-        )}
+        </motion.div>
+
+        {/* Waitlist Dialog */}
+        <WaitlistDialog open={dialogOpen} onOpenChange={setDialogOpen} />
       </div>
     </header>
   );

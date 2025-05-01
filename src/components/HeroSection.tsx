@@ -8,7 +8,7 @@ const HeroSection = () => {
     <section className="pt-24 pb-12 px-4 bg-gradient-to-br from-white to-blue-50">
       <div className="container mx-auto max-w-6xl">
         <div className="flex flex-col md:flex-row items-center">
-          <div className="w-full md:w-1/2 pr-0 md:pr-8 mb-8 md:mb-0">
+          <div className="w-full md:w-1/2 pr-0 md:pr-8 mb-8 md:mb-0 z-[1]">
             <h1 className="text-4xl md:text-5xl font-bold text-vehicle-navy mb-4 animate-fade-in">
               Your Vehicle's <span className="gradient-heading">Smart Companion</span>
             </h1>
