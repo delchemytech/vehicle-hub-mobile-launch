@@ -8,6 +8,8 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import { initHotjar } from "./lib/hotjar";
 import { initGA, trackPageView } from "./lib/ga";
+import { logEvent } from "firebase/analytics";
+import { analytics } from "./lib/firebase";
 
 const queryClient = new QueryClient();
 
@@ -34,12 +36,8 @@ const GoogleAnalyticsTracker = () => {
 
   useEffect(() => {
     if (import.meta.env.MODE === "production") {
-      initGA();
+      logEvent(analytics, "page_view", { page_path: location.pathname });
     }
-  }, []);
-
-  useEffect(() => {
-    trackPageView(location.pathname);
   }, [location]);
 
   return null;

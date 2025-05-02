@@ -1,44 +1,42 @@
-import React, { useState } from 'react';
-import { Apple, Play } from 'lucide-react';
-import WaitlistDialog from './WaitlistDialog';
+import React from 'react';
+import { trackEvent } from "@/lib/firebase";
 
-const AppStoreButtons = () => {
-  const [dialogOpen, setDialogOpen] = useState(false);
+interface AppStoreButtonsProps {
+  onStoreClick?: (store: 'apple' | 'google') => void;
+}
 
-  const handleClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setDialogOpen(true);
+const AppStoreButtons = ({ onStoreClick }: AppStoreButtonsProps) => {
+  const handleStoreClick = (store: 'apple' | 'google') => {
+    trackEvent('app_store_click', {
+      store,
+      location: onStoreClick ? 'custom' : 'standalone'
+    });
+    onStoreClick?.(store);
   };
 
   return (
-    <>
-      <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-        <a
-          href="#"
-          onClick={handleClick}
-          className="flex items-center justify-center gap-2 bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-colors"
-        >
-          <Apple size={24} />
-          <div className="flex flex-col">
-            <span className="text-xs">Download on the</span>
-            <span className="text-base font-semibold">App Store</span>
-          </div>
-        </a>
-        
-        <a
-          href="#"
-          onClick={handleClick}
-          className="flex items-center justify-center gap-2 bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-colors"
-        >
-          <Play size={24} fill="white" />
-          <div className="flex flex-col">
-            <span className="text-xs">Get it on</span>
-            <span className="text-base font-semibold">Google Play</span>
-          </div>
-        </a>
-      </div>
-      <WaitlistDialog open={dialogOpen} onOpenChange={setDialogOpen} />
-    </>
+    <div className="flex flex-col sm:flex-row gap-4">
+      <button 
+        onClick={() => handleStoreClick('apple')}
+        className="transition-transform hover:scale-105"
+      >
+        <img
+          src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83"
+          alt="Download on the App Store"
+          className="h-14"
+        />
+      </button>
+      <button 
+        onClick={() => handleStoreClick('google')}
+        className="transition-transform hover:scale-105"
+      >
+        <img
+          src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
+          alt="Get it on Google Play"
+          className="h-14"
+        />
+      </button>
+    </div>
   );
 };
 

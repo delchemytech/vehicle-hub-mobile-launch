@@ -3,12 +3,36 @@ import { AlignJustify, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import WaitlistDialog from "@/components/ui/WaitlistDialog";
+import { trackEvent } from "@/lib/firebase";
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
 
+  const handleNavClick = (section: string, isMobile: boolean = false) => {
+    trackEvent('navigation_click', {
+      section,
+      device: isMobile ? 'mobile' : 'desktop',
+      location: 'header'
+    });
+    if (isMobile) {
+      setMenuOpen(false);
+    }
+  };
+
+  const handleDownloadClick = (isMobile: boolean = false) => {
+    trackEvent('download_app_click', {
+      device: isMobile ? 'mobile' : 'desktop',
+      location: 'header'
+    });
+    setMenuOpen(false);
+    setDialogOpen(true);
+  };
+
   const toggleMenu = () => {
+    trackEvent('menu_toggle', {
+      action: menuOpen ? 'close' : 'open'
+    });
     setMenuOpen(!menuOpen);
   };
 
@@ -38,15 +62,15 @@ const Header = () => {
         <div className="hidden md:flex items-center space-x-6">
           <nav>
             <ul className="flex space-x-8">
-              <li><a href="#features" className="text-sm hover:text-vehicle-blue transition-colors">Features</a></li>
-              <li><a href="#benefits" className="text-sm hover:text-vehicle-blue transition-colors">Benefits</a></li>
-              <li><a href="#testimonials" className="text-sm hover:text-vehicle-blue transition-colors">Testimonials</a></li>
-              <li><a href="#faq" className="text-sm hover:text-vehicle-blue transition-colors">FAQ</a></li>
+              <li><a href="#features" onClick={() => handleNavClick('features')} className="text-sm hover:text-vehicle-blue transition-colors">Features</a></li>
+              <li><a href="#benefits" onClick={() => handleNavClick('benefits')} className="text-sm hover:text-vehicle-blue transition-colors">Benefits</a></li>
+              <li><a href="#testimonials" onClick={() => handleNavClick('testimonials')} className="text-sm hover:text-vehicle-blue transition-colors">Testimonials</a></li>
+              <li><a href="#faq" onClick={() => handleNavClick('faq')} className="text-sm hover:text-vehicle-blue transition-colors">FAQ</a></li>
             </ul>
           </nav>
           <Button 
             className="bg-vehicle-blue hover:bg-vehicle-skyblue text-white transition-colors"
-            onClick={() => setDialogOpen(true)}
+            onClick={() => handleDownloadClick()}
           >
             Download App
           </Button>
@@ -66,7 +90,7 @@ const Header = () => {
                   <a 
                     href="#features" 
                     className="text-lg block py-2 hover:text-vehicle-blue transition-colors"
-                    onClick={() => setMenuOpen(false)}
+                    onClick={() => handleNavClick('features', true)}
                   >
                     Features
                   </a>
@@ -75,7 +99,7 @@ const Header = () => {
                   <a 
                     href="#benefits" 
                     className="text-lg block py-2 hover:text-vehicle-blue transition-colors"
-                    onClick={() => setMenuOpen(false)}
+                    onClick={() => handleNavClick('benefits', true)}
                   >
                     Benefits
                   </a>
@@ -84,7 +108,7 @@ const Header = () => {
                   <a 
                     href="#testimonials" 
                     className="text-lg block py-2 hover:text-vehicle-blue transition-colors"
-                    onClick={() => setMenuOpen(false)}
+                    onClick={() => handleNavClick('testimonials', true)}
                   >
                     Testimonials
                   </a>
@@ -93,18 +117,15 @@ const Header = () => {
                   <a 
                     href="#faq" 
                     className="text-lg block py-2 hover:text-vehicle-blue transition-colors"
-                    onClick={() => setMenuOpen(false)}
+                    onClick={() => handleNavClick('faq', true)}
                   >
                     FAQ
                   </a>
                 </li>
                 <li className="pt-6">
                   <Button 
-                    className="bg-vehicle-blue hover:bg-vehicle-skyblue text-white transition-colors w-full" 
-                    onClick={() => {
-                      setMenuOpen(false);
-                      setDialogOpen(true);
-                    }}
+                    className="bg-vehicle-blue hover:bg-vehicle-skyblue text-white transition-colors w-full"
+                    onClick={() => handleDownloadClick(true)}
                   >
                     Download App
                   </Button>

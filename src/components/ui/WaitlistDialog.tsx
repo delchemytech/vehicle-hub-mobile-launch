@@ -1,111 +1,149 @@
-import React from "react";
-import { Button } from "@/components/ui/button";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
   DialogTitle,
+  DialogClose,
   DialogDescription,
-  DialogFooter,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Mail, User, Car, BellRing, Shield } from "lucide-react";
+import { X } from "lucide-react";
+import { collection, addDoc, Timestamp } from "firebase/firestore";
+import { db, trackEvent } from "@/lib/firebase";
 
-interface WaitlistDialogProps {
+interface WhitelistDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-const WaitlistDialog = ({ open, onOpenChange }: WaitlistDialogProps) => {
-  const handleSubmit = (e: React.FormEvent) => {
+const WhitelistDialog = ({ open, onOpenChange }: WhitelistDialogProps) => {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [submitted, setSubmitted] = useState<"success" | "error" | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically send the data to your backend
+    if (!name || !email.includes("@")) {
+      trackEvent("waitlist_submission_error", {
+        reason: !name ? "missing_name" : "invalid_email",
+      });
+      setSubmitted("error");
+      return;
+    }
+
+    try {
+      await addDoc(collection(db, "whitelist"), {
+        name,
+        email,
+        createdAt: Timestamp.now(),
+      });
+      trackEvent("waitlist_submission_success", {
+        userType: "new",
+      });
+      setSubmitted("success");
+      setTimeout(() => {
+        setSubmitted(null);
+        onOpenChange(false);
+        setName("");
+        setEmail("");
+      }, 2000);
+    } catch (error) {
+      console.error("Firestore error:", error);
+      trackEvent("waitlist_submission_error", {
+        reason: "server_error",
+        error: error.message,
+      });
+      setSubmitted("error");
+    }
+  };
+
+  const handleClose = () => {
+    trackEvent("waitlist_dialog_close", {
+      submitted: submitted !== null,
+    });
     onOpenChange(false);
   };
 
-  const benefits = [
-    { icon: BellRing, text: "Early access to new features" },
-    { icon: Shield, text: "Priority support" },
-    { icon: Car, text: "Exclusive launch offers" },
-  ];
-
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-center text-vehicle-navy">
-            Join the Waitlist
-          </DialogTitle>
-          <DialogDescription className="text-center text-base">
-            Be among the first to experience the future of vehicle management
-          </DialogDescription>
-        </DialogHeader>
+    <Dialog open={open} onOpenChange={handleClose}>
+      <DialogContent
+        className="p-0 max-w-4xl w-full rounded-none border-none overflow-hidden shadow-2xl"
+      >
+        <DialogTitle className="sr-only">Join the Whitelist</DialogTitle>
 
-        <div className="my-6 grid grid-cols-3 gap-4">
-          {benefits.map((benefit, index) => (
-            <div 
-              key={index} 
-              className="flex flex-col items-center text-center p-2"
-            >
-              <div className="h-10 w-10 rounded-full bg-blue-50 flex items-center justify-center mb-2">
-                <benefit.icon className="h-5 w-5 text-vehicle-blue" />
-              </div>
-              <span className="text-sm text-gray-600">{benefit.text}</span>
-            </div>
-          ))}
-        </div>
+        <DialogClose asChild>
+          <button className="absolute top-4 right-4 text-white z-10">
+            <X size={28} />
+          </button>
+        </DialogClose>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-4">
-            <div className="relative">
-              <Label htmlFor="name" className="text-sm font-medium">
-                Name
-              </Label>
-              <div className="relative">
-                <User className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                <Input 
-                  id="name" 
-                  placeholder="Enter your name" 
-                  className="pl-10" 
-                  required 
-                />
-              </div>
-            </div>
+        <div className="flex flex-col md:flex-row w-full h-full">
+          {/* Left Image Section */}
+          <div
+            className="hidden md:block w-full md:w-1/2 bg-black bg-cover bg-center min-h-[250px] md:min-h-[600px]"
+            style={{
+              backgroundImage: "url('/images/car-popup.webp')",
+            }}
+          />
 
-            <div className="relative">
-              <Label htmlFor="email" className="text-sm font-medium">
-                Email
-              </Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Enter your email"
-                  className="pl-10"
+          {/* Right Form Section */}
+          <div className="w-full md:w-1/2 bg-gradient-to-b from-[#2a2a2a] to-[#5c5c5c] text-white flex flex-col justify-center items-center px-6 py-10 relative">
+            <h2 className="text-xl md:text-3xl font-semibold text-center leading-snug mb-6">
+              Be the First to get update<br />by Joining Our Whitelist!
+            </h2>
+
+            <div className="bg-white text-black rounded-lg p-6 w-full max-w-md shadow-md">
+              <h3 className="text-lg font-semibold text-center mb-1">
+                Join the Whitelist!
+              </h3>
+              <DialogDescription
+                className="text-center text-sm mb-4"
+              >
+                Sign up now for early notification upon launch.
+              </DialogDescription>
+
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Enter your Name"
+                  className="w-full p-3 rounded-md bg-gray-100 text-sm outline-none focus:ring-2 focus:ring-blue-500"
                   required
                 />
-              </div>
+
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your Email"
+                  className="w-full p-3 rounded-md bg-gray-100 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+
+                <button
+                  type="submit"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-md"
+                >
+                  Join Exclusive Whitelist
+                </button>
+
+                {submitted === "success" && (
+                  <p className="text-center text-green-600 text-sm mt-2">
+                    🎉 Thank you! You’ve successfully joined the whitelist.
+                  </p>
+                )}
+                {submitted === "error" && (
+                  <p className="text-center text-red-600 text-sm mt-2">
+                    Please provide valid name and email.
+                  </p>
+                )}
+              </form>
             </div>
           </div>
-
-          <DialogFooter>
-            <Button 
-              type="submit" 
-              className="w-full bg-vehicle-blue hover:bg-vehicle-skyblue text-white font-semibold py-6"
-            >
-              Join Exclusive Waitlist
-            </Button>
-          </DialogFooter>
-        </form>
-
-        <div className="mt-4 text-center text-sm text-gray-500">
-          By joining, you'll be the first to know when we launch in your area
         </div>
       </DialogContent>
     </Dialog>
   );
 };
 
-export default WaitlistDialog;
+export default WhitelistDialog;

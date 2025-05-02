@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   Accordion,
@@ -6,6 +5,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { trackEvent } from "@/lib/firebase";
 
 const FaqSection = () => {
   const faqs = [
@@ -36,6 +36,13 @@ const FaqSection = () => {
     },
   ];
 
+  const handleFaqClick = (question: string) => {
+    trackEvent('faq_interaction', {
+      question,
+      action: 'toggle'
+    });
+  };
+
   return (
     <section id="faq" className="section-padding bg-white">
       <div className="container mx-auto max-w-3xl">
@@ -49,7 +56,10 @@ const FaqSection = () => {
         <Accordion type="single" collapsible className="w-full">
           {faqs.map((faq, index) => (
             <AccordionItem key={index} value={`item-${index}`}>
-              <AccordionTrigger className="text-left font-medium text-vehicle-navy">
+              <AccordionTrigger
+                className="text-left font-medium text-vehicle-navy"
+                onClick={() => handleFaqClick(faq.question)}
+              >
                 {faq.question}
               </AccordionTrigger>
               <AccordionContent className="text-gray-600">

@@ -1,46 +1,54 @@
-
 import React from "react";
+import { trackEvent } from "@/lib/firebase";
 import { Clock, Zap, BarChart3, Shield, Briefcase, PieChart } from "lucide-react";
 
 const BenefitsSection = () => {
   const benefits = [
     {
-      id: 1,
+      id: "save-time",
       title: "Save Time",
       description: "No more paperwork or phone calls. Manage everything with a few taps.",
       icon: Clock,
     },
     {
-      id: 2,
+      id: "real-time-updates",
       title: "Real-Time Updates",
       description: "Get instant notifications about your vehicle's needs and status.",
       icon: Zap,
     },
     {
-      id: 3,
+      id: "all-in-one-management",
       title: "All-in-One Management",
       description: "One app to replace multiple services and documents.",
       icon: Briefcase,
     },
     {
-      id: 4,
+      id: "secure-platform",
       title: "Secure Platform",
       description: "Your data is encrypted and protected with enterprise-grade security.",
       icon: Shield,
     },
     {
-      id: 5,
+      id: "cost-tracking",
       title: "Cost Tracking",
       description: "Track all your vehicle expenses in one place with detailed reports.",
       icon: BarChart3,
     },
     {
-      id: 6,
+      id: "personalized-insights",
       title: "Personalized Insights",
       description: "Get recommendations based on your driving patterns and vehicle type.",
       icon: PieChart,
     },
   ];
+
+  const handleBenefitClick = (benefitId: string, benefitTitle: string) => {
+    trackEvent("benefit_interaction", {
+      benefit_id: benefitId,
+      benefit_name: benefitTitle,
+      action: "click",
+    });
+  };
 
   return (
     <section id="benefits" className="section-padding bg-blue-50">
@@ -56,7 +64,8 @@ const BenefitsSection = () => {
           {benefits.map((benefit) => (
             <div
               key={benefit.id}
-              className="bg-white rounded-xl p-6 shadow border border-gray-100 hover:shadow-md transition-shadow"
+              className="bg-white rounded-xl p-6 shadow border border-gray-100 hover:shadow-md transition-shadow cursor-pointer"
+              onClick={() => handleBenefitClick(benefit.id, benefit.title)}
             >
               <div className="flex items-start">
                 <div className="mr-4 mt-1 text-vehicle-blue">
